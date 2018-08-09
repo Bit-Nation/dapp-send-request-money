@@ -1,33 +1,61 @@
-import pangea from 'pangea-sdk'
+import React from 'react';
+import {
+  setOpenHandler,
+  newModalUIID,
+  renderModal,
+  renderMessage,
+  setMessageRenderer,
+  Container,
+} from 'pangea-sdk';
+import Modal from './components/Modal';
 
-const {
-    renderUI,
-    View,
-    Text,
-    setOpenHandler,
-    setMessageHandler,
-    showModal,
-} = pangea;
+class DemoModal extends Modal {
+  render() {
+    return (
+      <text>Hi there</text>
+    );
+  }
+}
 
-// this handler will be called
-// when the user opens your DApp
+function DemoMessage(props) {
+  return (
+    <text>I am a message </text>
+  );
+}
+
+console.log('[DAPP] DApp started');
+
 setOpenHandler((payload, cb) => {
 
-    // layout that will be rendered
-    const layout = new View(
-        {},
-        [
-            new Text(
-                {},
-                "Hi there"
-            ),
-            new Text(
-                {},
-                "This is the Pange VM"
-            )
-        ]
-    );
+  console.log('[DAPP] DApp opened');
 
-    showModal("Select Action", renderUI(layout), cb)
+  // obtain a new modal id
+  newModalUIID(() => {
+    console.log('[DAPP] Closed modal');
+  }, (error, modalUIID) => {
+
+    if (error) {
+      return cb(error);
+    }
+
+    renderModal(<DemoModal modalContainer={new Container(modalUIID)}/>, () => {
+      // once the modal got rendered, we can "close" the open process
+      cb();
+    });
+
+  });
+
+});
+
+/**
+ * @desc set out message handler
+ */
+setMessageRenderer((payload, cb) => {
+
+  const { message } = payload;
+
+  renderMessage(<DemoMessage/>, (jsx) => {
+    cb(null, jsx);
+  });
 
 });
