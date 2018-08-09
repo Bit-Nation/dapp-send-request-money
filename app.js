@@ -6,8 +6,8 @@ import {
   renderMessage,
   setMessageRenderer,
   Container,
+  Modal,
 } from 'pangea-sdk';
-import Modal from './components/Modal';
 
 class DemoModal extends Modal {
   render() {
