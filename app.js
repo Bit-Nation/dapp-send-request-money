@@ -6,16 +6,8 @@ import {
   renderMessage,
   setMessageRenderer,
   Container,
-  Modal,
 } from 'pangea-sdk';
-
-class DemoModal extends Modal {
-  render() {
-    return (
-      <text>Hi there</text>
-    );
-  }
-}
+import Modal from './components/Modal';
 
 function DemoMessage(props) {
   return (
@@ -23,22 +15,21 @@ function DemoMessage(props) {
   );
 }
 
-console.log('[DAPP] DApp started');
+console.log('[HEY] App started');
 
 setOpenHandler((payload, cb) => {
 
-  console.log('[DAPP] DApp opened');
-
+  console.log('[HEY] App opened');
   // obtain a new modal id
   newModalUIID(() => {
-    console.log('[DAPP] Closed modal');
+    console.log('[HEY] Closed modal');
   }, (error, modalUIID) => {
 
     if (error) {
       return cb(error);
     }
 
-    renderModal(<DemoModal modalContainer={new Container(modalUIID)}/>, () => {
+    renderModal(<Modal modalContainer={new Container(modalUIID)}/>, () => {
       // once the modal got rendered, we can "close" the open process
       cb();
     });
