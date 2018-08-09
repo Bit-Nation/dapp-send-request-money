@@ -23,7 +23,7 @@
   },
   "pangea_dapp": {
     "name": {
-      "en-us": "DApp Name"
+      "en-us": "Send/request money"
     },
     "engine": "0.1.0",
     "icon_path": "./appIcon.png"
