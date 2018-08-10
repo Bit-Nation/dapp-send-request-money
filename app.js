@@ -25,14 +25,13 @@ setOpenHandler((payload, cb) => {
     console.log('[HEY] Closed modal');
   }, (error, modalUIID) => {
 
+    console.log(`[HEY] Modal uiID ${modalUIID}`);
+
     if (error) {
       return cb(error);
     }
 
-    renderModal(<Modal modalContainer={new Container(modalUIID)}/>, () => {
-      // once the modal got rendered, we can "close" the open process
-      cb();
-    });
+    renderModal(<Modal modalContainer={new Container(modalUIID)}/>, cb);
 
   });
 
