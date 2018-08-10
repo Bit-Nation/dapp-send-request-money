@@ -17,7 +17,7 @@
     "webpack-cli": "^2.0.10"
   },
   "dependencies": {
-    "pangea-sdk": "git+https://github.com/Bit-Nation/pangea-sdk.git#24ed512434da1cc245708a71fa04957bd5f5cd7b",
+    "pangea-sdk": "0.10.4",
     "react": "16.4.2",
     "truffle": "^4.1.13"
   },
