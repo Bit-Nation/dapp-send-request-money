@@ -1,9 +1,6 @@
 import React from 'react';
 import { Modal } from 'pangea-sdk';
 
-const GlobalStyles = {};
-const Colors = {};
-
 export default class CustomModal extends Modal {
   constructor(props) {
     super(props);
@@ -11,114 +8,81 @@ export default class CustomModal extends Modal {
     this.state = {
       amount: '',
       currency: 'XPAT',
-      fromAddress: '',
+      walletAddress: '',
       isValid: false,
+      isLessThanBalance: false,
     };
 
   }
 
-  onAmountSelected = (amount, currency, fromAddress, isValid) => {
+  onAmountSelected = (data, cb) => {
+    const { amount, currency, walletAddress, isValid, isLessThanBalance } = data.payload;
     this.setState({
-      amount, currency, fromAddress, isValid,
-    });
+      amount, currency, walletAddress, isValid, isLessThanBalance,
+    }, cb);
   };
 
-  onButtonPress = (context, cb) => {
-    console.log(`[HEY] We ${this.props.modalContainer}`);
-    console.log(`[HEY] We ${this.props.modalContainer.uiID}`);
+  onRequestPressed = (data, cb) => {
+    cb();
+  };
 
-    this.setState((prevState) => ({
-      isValid: true,
-    }), () => {
-      console.log('[HEY] Set state callback ');
-      cb();
-    });
-
-    console.log('[HEY] We are done ');
-    // try {
-    //   this.props.components.setLoadingVisible(true);
-    //   const address = await this.props.services.ethereumService.ethereumAddressFromPublicKey(this.props.context.friend.ethereum_pub_Key);
-    //   const result = await this.props.services.sendMoney(this.state.currency, address, this.state.amount);
-    //
-    //   const data = {
-    //     amount: this.state.amount,
-    //     currency: this.state.currency,
-    //     fromAddress: this.state.fromAddress,
-    //     toAddress: address,
-    //     txHash: result.hash,
-    //     to: this.props.context.friend,
-    //     fromName: this.props.context.currentAccount.name,
-    //   };
-    //
-    //   this.props.services.sendMessage('SEND_MESSAGE', '', data, () => {
-    //     this.props.navigation.dismiss();
-    //   });
-    // } catch (error) {
-    //   if (error.isCancelled === true) {
-    //     return;
-    //   }
-    //   errorAlert(error);
-    // } finally {
-    //   this.props.components.setLoadingVisible(false);
-    // }
+  onSendPressed = (data, cb) => {
+    cb();
   };
 
   render() {
     return (
       <view style={{ flex: 1 }}>
-        {/*<text>*/}
-        {/*{JSON.stringify(this.props)}*/}
-        {/*</text>*/}
-        {/*<amountSelect onAmountSelected={this.onAmountSelected} shouldCheckLess={true}>*/}
-        {/*</amountSelect>*/}
-        <text style={styles.toLabelText} type='footnote'>To</text>
-        <view style={styles.textInputContainer}>
-          <textInput
-            style={[styles.textInputInContainer, GlobalStyles.currencyLarge, styles.currencyNumber]}
-            editable={false}
-            // value={this.props.context.friend.name}
+        <amountSelect onAmountSelected={this.onAmountSelected}/>
+        <text style={styles.toLabelText} type='footnote'>Partner name</text>
+        <view style={styles.partnerNameContainer}>
+          <text type='title2' style={styles.partnerNameText}>Someone</text>
+        </view>
+        <view style={styles.buttonContainer}>
+          <button
+            title='REQUEST'
+            style={[styles.button, { marginRight: 5 }]}
+            type='action'
+            disabled={this.state.isValid === false}
+            onPress={this.onRequestPressed}
+          />
+          <button
+            title='SEND'
+            style={[styles.button, { marginLeft: 5 }]}
+            type='action'
+            disabled={this.state.isValid === false || this.state.isLessThanBalance === false}
+            onPress={this.onSendPressed}
           />
         </view>
-        <button
-          title='Change'
-          onPress={this.onButtonPress}
-        />
-        <button
-          title='Send'
-          disabled={this.state.isValid === false}
-        />
       </view>
     );
   }
 }
 
 const styles = {
-  textInputContainer: {
-    backgroundColor: Colors.white,
+  partnerNameContainer: {
+    marginTop: 6,
+    backgroundColor: 'white',
     borderRadius: 5,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-start',
     paddingLeft: 25,
+    height: 50,
   },
-  textInputInContainer: {
-    ...GlobalStyles.textInput,
-    marginBottom: 0,
-    marginTop: 0,
-    borderBottomWidth: 0,
+  partnerNameText: {
+    color: 'black',
   },
-  currencyNumber: {
-    fontWeight: 'normal',
-    color: Colors.BitnationDarkGrayColor,
+  buttonContainer: {
+    marginTop: 12,
+    flexDirection: 'row',
+    height: 50,
+  },
+  button: {
+    flex: 1,
   },
   toLabelText: {
     marginLeft: 5,
     marginTop: 10,
-  },
-  sendButton: {
-    backgroundColor: Colors.BitnationHighlightColor,
-    height: 50,
-    borderRadius: 0,
-    marginTop: 16,
   },
 };

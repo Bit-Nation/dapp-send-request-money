@@ -15,24 +15,16 @@ function DemoMessage(props) {
   );
 }
 
-console.log('[HEY] App started');
+console.log('[DApp] App started');
 
 setOpenHandler((payload, cb) => {
-
-  console.log('[HEY] App opened');
   // obtain a new modal id
   newModalUIID(() => {
-    console.log('[HEY] Closed modal');
   }, (error, modalUIID) => {
-
-    console.log(`[HEY] Modal uiID ${modalUIID}`);
-
     if (error) {
       return cb(error);
     }
-
-    renderModal(<Modal modalContainer={new Container(modalUIID)}/>, cb);
-
+    renderModal(<Modal title='Send/request money' modalContainer={new Container(modalUIID)}/>, cb);
   });
 
 });
