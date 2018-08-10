@@ -1,33 +1,43 @@
-import pangea from 'pangea-sdk'
+import React from 'react';
+import {
+  setOpenHandler,
+  newModalUIID,
+  renderModal,
+  renderMessage,
+  setMessageRenderer,
+  Container,
+} from 'pangea-sdk';
+import Modal from './components/Modal';
 
-const {
-    renderUI,
-    View,
-    Text,
-    setOpenHandler,
-    setMessageHandler,
-    showModal,
-} = pangea;
+function DemoMessage(props) {
+  return (
+    <text>I am a message </text>
+  );
+}
 
-// this handler will be called
-// when the user opens your DApp
+console.log('[DApp] App started');
+
 setOpenHandler((payload, cb) => {
+  // obtain a new modal id
+  newModalUIID(() => {
+  }, (error, modalUIID) => {
+    if (error) {
+      return cb(error);
+    }
+    renderModal(<Modal title='Send/request money' modalContainer={new Container(modalUIID)}/>, cb);
+  });
 
-    // layout that will be rendered
-    const layout = new View(
-        {},
-        [
-            new Text(
-                {},
-                "Hi there"
-            ),
-            new Text(
-                {},
-                "This is the Pange VM"
-            )
-        ]
-    );
+});
 
-    showModal("Select Action", renderUI(layout), cb)
+/**
+ * @desc set out message handler
+ */
+setMessageRenderer((payload, cb) => {
+
+  const { message } = payload;
+
+  renderMessage(<DemoMessage/>, (jsx) => {
+    cb(null, jsx);
+  });
 
 });
