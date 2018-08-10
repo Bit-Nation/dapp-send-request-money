@@ -11,13 +11,13 @@
   "devDependencies": {
     "babel-loader": "^7.1.4",
     "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-react-native": "^4.0.0",
     "babel-polyfill": "^6.26.0",
     "webpack": "^4.1.0",
     "webpack-cli": "^2.0.10"
   },
   "dependencies": {
-    "babel-preset-react-native": "^4.0.0",
-    "pangea-sdk": "0.10.0",
+    "pangea-sdk": "git+https://github.com/Bit-Nation/pangea-sdk.git#24ed512434da1cc245708a71fa04957bd5f5cd7b",
     "react": "16.4.2",
     "truffle": "^4.1.13"
   },
