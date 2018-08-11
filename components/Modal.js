@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal } from 'pangea-sdk';
+import { Modal, sendETHTransaction } from 'pangea-sdk';
 
 export default class CustomModal extends Modal {
   constructor(props) {
@@ -27,7 +27,16 @@ export default class CustomModal extends Modal {
   };
 
   onSendPressed = (data, cb) => {
-    cb();
+    const address = '0x9fA72a387011f30EFC0DEde0C27D5BB6b87132A4';
+    sendETHTransaction({
+      value: this.state.amount,
+      to: address,
+      data: '',
+    }, (tx, error) => {
+      console.log(`[HEY] WE sent tx ${JSON.stringify(tx)}`);
+      console.log(`[HEY] WE sent tx error: ${JSON.stringify(error)}`);
+      cb();
+    });
   };
 
   render() {
