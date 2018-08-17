@@ -11,6 +11,7 @@ export default class CustomModal extends Modal {
       walletAddress: '',
       isValid: false,
       isLessThanBalance: false,
+      txError: null,
     };
 
   }
@@ -30,6 +31,7 @@ export default class CustomModal extends Modal {
         payer: this.props.context.partner,
         amount: this.state.amount,
         currency: this.state.currency,
+        status: 'pending',
       },
       type: 'REQUEST_MONEY',
     }, cb);
@@ -37,14 +39,40 @@ export default class CustomModal extends Modal {
 
   onSendPressed = (data, cb) => {
     const address = this.props.context.partner.ethereumAddress;
-    sendETHTransaction({
-      value: this.state.amount,
-      to: address,
-      data: '',
-    }, (tx, error) => {
-      console.log(`[HEY] WE sent tx ${JSON.stringify(tx)}`);
-      console.log(`[HEY] WE sent tx error: ${JSON.stringify(error)}`);
-      cb();
+    this.setState(() => ({
+      txError: null,
+    }), () => {
+      sendETHTransaction({
+        value: this.state.amount,
+        to: address,
+        data: '',
+      }, (error, tx) => {
+        if (error != null) {
+          if (error === 'got nil ethTx response') {
+            cb();
+            return;
+          }
+          this.setState(() => ({
+            txError: error,
+          }), cb);
+          return;
+        }
+
+        const txHash = JSON.parse(tx).hash;
+
+        sendMessage(this.props.context.partner.identityKey, {
+          shouldSend: true,
+          params: {
+            sender: this.props.context.account,
+            receiver: this.props.context.partner,
+            amount: this.state.amount,
+            currency: this.state.currency,
+            txHash: txHash,
+            contentToCopy: txHash,
+          },
+          type: 'SEND_MONEY',
+        }, cb);
+      });
     });
   };
 
@@ -76,6 +104,7 @@ export default class CustomModal extends Modal {
             onPress={this.onSendPressed}
           />
         </view>
+        <text type='body' style={styles.errorText}>{this.state.txError}</text>
       </view>
     );
   }
@@ -106,5 +135,8 @@ const styles = {
   toLabelText: {
     marginLeft: 5,
     marginTop: 10,
+  },
+  errorText: {
+    color: '#FF5469',
   },
 };

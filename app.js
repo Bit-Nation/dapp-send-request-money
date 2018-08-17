@@ -40,15 +40,27 @@ setOpenHandler((payload, cb) => {
  * @desc Function that is called to render message
  */
 setMessageRenderer((payload, cb) => {
-  const { message, context } = payload;
+  const { message } = payload;
 
   let Component = null;
+  let propsToPass = {};
   switch (message.type) {
     case 'SEND_MONEY':
       Component = SendMessage;
       break;
     case 'REQUEST_MONEY':
       Component = RequestMessage;
+      propsToPass = {
+        onSelectSend: (payload, cb) => {
+          showMainModal({
+            ...payload,
+            initialData: {
+              amount: message.params.amount,
+              currency: message.params.currency,
+            },
+          }, cb);
+        },
+      };
       break;
   }
   if (Component === null) {
@@ -58,17 +70,9 @@ setMessageRenderer((payload, cb) => {
   renderMessage(
     <Component
       payload={payload}
-      onSelectSend={(payload, cb) => {
-        showMainModal({
-          ...payload,
-          initialData: {
-            amount: message.params.amount,
-            currency: message.params.currency,
-          },
-        }, cb);
-      }}/>,
+      {...propsToPass}
+    />,
     (jsx) => {
       cb(null, jsx);
     });
-
 });
