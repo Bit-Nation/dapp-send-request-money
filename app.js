@@ -4,6 +4,7 @@ import {
   newModalUIID,
   renderModal,
   renderMessage,
+  sendMessage,
   setMessageRenderer,
   Container,
 } from 'pangea-sdk';
@@ -11,7 +12,7 @@ import Modal from './components/Modal';
 
 function DemoMessage(props) {
   return (
-    <text>I am a message </text>
+    <text>{props.context.account.ethereumAddress}</text>
   );
 }
 
@@ -24,7 +25,12 @@ setOpenHandler((payload, cb) => {
     if (error) {
       return cb(error);
     }
-    renderModal(<Modal title='Send/request money' modalContainer={new Container(modalUIID)}/>, cb);
+    // renderModal(<Modal title='Send/request money' modalContainer={new Container(modalUIID)}/>, cb);
+    sendMessage(payload.partner.identityKey, {
+      shouldSend: true,
+      params: { myParam: 'MY_PARAM', ...payload },
+      type: 'SEND_MONEY'
+    }, cb)
   });
 
 });
@@ -33,9 +39,9 @@ setOpenHandler((payload, cb) => {
  * @desc set out message handler
  */
 setMessageRenderer((payload, cb) => {
+  console.log(`[DAPP] Message payload ${JSON.stringify(payload)}`);
 
   const { message } = payload;
-
   renderMessage(<DemoMessage/>, (jsx) => {
     cb(null, jsx);
   });
