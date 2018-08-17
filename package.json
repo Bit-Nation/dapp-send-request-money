@@ -17,7 +17,7 @@
     "webpack-cli": "^2.0.10"
   },
   "dependencies": {
-    "pangea-sdk": "0.10.4",
+    "pangea-sdk": "0.11.0",
     "react": "16.4.2",
     "truffle": "^4.1.13"
   },
