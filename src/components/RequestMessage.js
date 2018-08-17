@@ -14,7 +14,7 @@ export default function RequestMessage({ payload: { message, context }, onSelect
   return (
     <view>
       <text type='body'>
-        {payer.name} has requested <text type='bodyBold'>{amount} {currency}</text> from you.
+        {requester.name} has requested <text type='bodyBold'>{amount} {currency}</text> from you.
       </text>
       <button type='action'
               onPress={onSelectSend}
