@@ -1,13 +1,13 @@
 import React from 'react';
-import { Modal, sendETHTransaction } from 'pangea-sdk';
+import { Modal, sendETHTransaction, sendMessage } from 'pangea-sdk';
 
 export default class CustomModal extends Modal {
   constructor(props) {
     super(props);
 
     this.state = {
-      amount: '',
-      currency: 'XPAT',
+      amount: '0',
+      currency: 'ETH',
       walletAddress: '',
       isValid: false,
       isLessThanBalance: false,
@@ -23,11 +23,20 @@ export default class CustomModal extends Modal {
   };
 
   onRequestPressed = (data, cb) => {
-    cb();
+    sendMessage(this.props.context.partner.identityKey, {
+      shouldSend: true,
+      params: {
+        requester: this.props.context.account,
+        payer: this.props.context.partner,
+        amount: this.state.amount,
+        currency: this.state.currency,
+      },
+      type: 'REQUEST_MONEY',
+    }, cb);
   };
 
   onSendPressed = (data, cb) => {
-    const address = '0x9fA72a387011f30EFC0DEde0C27D5BB6b87132A4';
+    const address = this.props.context.partner.ethereumAddress;
     sendETHTransaction({
       value: this.state.amount,
       to: address,
@@ -42,10 +51,14 @@ export default class CustomModal extends Modal {
   render() {
     return (
       <view style={{ flex: 1 }}>
-        <amountSelect onAmountSelected={this.onAmountSelected}/>
+        <amountSelect
+          onAmountSelected={this.onAmountSelected}
+          changeCurrencyEnabled={false}
+          initialAmount={(this.props.initialData || {}).amount}
+          initialCurrency={(this.props.initialData || {}).currency}/>
         <text style={styles.toLabelText} type='footnote'>Partner name</text>
         <view style={styles.partnerNameContainer}>
-          <text type='title2' style={styles.partnerNameText}>Someone</text>
+          <text type='title2' style={styles.partnerNameText}>{this.props.context.partner.name}</text>
         </view>
         <view style={styles.buttonContainer}>
           <button

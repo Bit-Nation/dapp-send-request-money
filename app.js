@@ -8,42 +8,67 @@ import {
   setMessageRenderer,
   Container,
 } from 'pangea-sdk';
-import Modal from './components/Modal';
+import Modal from './src/components/Modal';
+import SendMessage from './src/components/SendMessage';
+import RequestMessage from './src/components/RequestMessage';
 
-function DemoMessage(props) {
-  return (
-    <text>{props.context.account.ethereumAddress}</text>
+function showMainModal(payload, cb) {
+  // obtain a new modal id
+  newModalUIID(
+    () => {
+    },
+    (error, modalUIID) => {
+      if (error) {
+        return cb(error);
+      }
+      renderModal(<Modal title='Send/request money'
+                         context={payload.context}
+                         initialData={payload.initialData}
+                         modalContainer={new Container(modalUIID)}/>, cb);
+    },
   );
 }
 
-console.log('[DApp] App started');
-
+/**
+ * @desc Function that is called on DApp start
+ */
 setOpenHandler((payload, cb) => {
-  // obtain a new modal id
-  newModalUIID(() => {
-  }, (error, modalUIID) => {
-    if (error) {
-      return cb(error);
-    }
-    // renderModal(<Modal title='Send/request money' modalContainer={new Container(modalUIID)}/>, cb);
-    sendMessage(payload.partner.identityKey, {
-      shouldSend: true,
-      params: { myParam: 'MY_PARAM', ...payload },
-      type: 'SEND_MONEY'
-    }, cb)
-  });
-
+  showMainModal(payload, cb);
 });
 
 /**
- * @desc set out message handler
+ * @desc Function that is called to render message
  */
 setMessageRenderer((payload, cb) => {
-  console.log(`[DAPP] Message payload ${JSON.stringify(payload)}`);
+  const { message, context } = payload;
 
-  const { message } = payload;
-  renderMessage(<DemoMessage/>, (jsx) => {
-    cb(null, jsx);
-  });
+  let Component = null;
+  switch (message.type) {
+    case 'SEND_MONEY':
+      Component = SendMessage;
+      break;
+    case 'REQUEST_MONEY':
+      Component = RequestMessage;
+      break;
+  }
+  if (Component === null) {
+    cb(null, {});
+  }
+
+  renderMessage(
+    <Component
+      payload={payload}
+      onSelectSend={(payload, cb) => {
+        showMainModal({
+          ...payload,
+          initialData: {
+            amount: message.params.amount,
+            currency: message.params.currency,
+          },
+        }, cb);
+      }}/>,
+    (jsx) => {
+      cb(null, jsx);
+    });
 
 });
